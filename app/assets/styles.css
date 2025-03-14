@@ -1,0 +1,40 @@
+/* CSS für die Startseite (TODO Responive Design) */ 
+
+.st-key-main-container {  /* Hauptcontainer (Abstand zwischen Sidebar und Inhalt) */
+   position: relative;
+   right: 50%;
+   width: 1300px; 
+   bottom: 80px;
+}
+
+.st-key-startpage-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.st-key-startpage-header-container {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+
+.st-key-statistics-container {
+   width: 1300px;  
+   padding-top: 40px;
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 40px;
+}
+
+
+[class*="st-key-project"] button {
+    width: 100%;
+}
+
+.st-key-startpage-logout-button {
+    position: fixed;
+    bottom: 20px;
+    left: 92%   
+}
