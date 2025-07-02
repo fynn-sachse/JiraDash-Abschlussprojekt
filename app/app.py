@@ -6,9 +6,7 @@ for key, default_value in {
     "jira_projects": None,
     "jira_tickets": None,
     "show_statistic": False,
-    "percentage_result_df": None,
-    "line_chart_df" : None,
-    "avg_monthly_proc_time_df" : None,
+    "statistic_result_df": None,
     "selected_jira_project" : None,
     "jira_client" : None
 }.items():

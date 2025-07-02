@@ -2,12 +2,13 @@ import streamlit as st
 import pathlib
 import pandas as pd
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import plotly.express as px #Installiert
 from core.calculations import calc_average_processing_time, calc_ticket_status_percantage, calc_monthly_date_ranges
 
 # DOTO:
 # übersichtlich machen wie viele Tickets schon geladen haben
+# Beim Kreisdiagramm Tickets auch über einen Zeitraum abfgragen
+# Charts in eigene Componente auslagern
 
 st.set_page_config(initial_sidebar_state="expanded")
 
@@ -32,11 +33,60 @@ load_css(css_path)
 jira_user = st.session_state.jira_client.jira_user
 
 
-#Laden aller Tickets und Projekte des Users
+#Laden aller Projekte des users
 with st.container(key="startpage-spinner-container"):
     with st.spinner("Daten werden Abgerufen"):
-        if st.session_state.jira_projects == None:
+        if st.session_state.jira_projects is None:
             st.session_state.jira_projects = st.session_state.jira_client.load_projects_of_user()
+
+def show_user_avg_processing_time_chart():
+    # Berechnen des Zeitraum Dataframes sowie Abfrage der Tickets über den Zeitraum
+    date_range_df = calc_monthly_date_ranges(12) 
+    tickets = st.session_state.jira_client.load_tickets_between_dates_user(
+        date_range_df.iloc[-1]["start_date"],
+        date_range_df.iloc[0]["end_date"]
+    )
+    if not tickets:
+        st.error("Keine Tickets für den User gefunden")
+    else:
+        # Aufruf der Berechnungsmethode
+        avg_processing_times_by_month_df = calc_average_processing_time(tickets, date_range_df)
+        if not avg_processing_times_by_month_df.empty:
+            #Erstellen des Diagramms
+            avg_proc_time_chart = px.bar(
+                avg_processing_times_by_month_df,
+                x="Monat",
+                y="durchsch. Bearbeitungszeit",
+                title="⏱️ Durchschnittliche Bearbeitungszeit pro Monat (in Tagen)"
+            )
+            avg_proc_time_chart.update_xaxes(tickformat="%b %Y")
+            avg_proc_time_chart.update_layout(xaxis_type='category')
+            st.plotly_chart(avg_proc_time_chart)
+
+
+# Kreisdiagramm: Prozentsätze nach Ticketstatus
+def show_user_ticket_status_chart():
+    #Zeigt die aktuelle Ticketstatusverteilung des Users in einem Pie Chart
+
+    tickets = st.session_state.jira_client.load_all_tickets_user()
+
+    if not tickets:
+        st.error("Keine Tickets für den User gefunden")
+    else:
+        ticket_status_df = calc_ticket_status_percantage(tickets)
+        status_chart_data = {
+            "Kategorien": ["Geschlossen", "Neu", "In Bearbeitung"],
+            "Werte": [
+                ticket_status_df["Fertig"],
+                ticket_status_df["Offen"],
+                ticket_status_df["In Bearbeitung"]
+            ]
+        }
+
+        status_pie_chart = px.pie(status_chart_data, names="Kategorien", values="Werte",
+                                title="📊 Verteilung der Ticket-Status")
+        st.plotly_chart(status_pie_chart)
+
 
 
 # Haupt-Cotainer für alle Seiten Inhalte
@@ -45,62 +95,54 @@ with st.container(key="main-container"):
     #Container für Header
     with st.container(key="startpage-header-container"):
         st.title("Startseite")
-        st.subheader(f"Willkommen auf der Startseite {jira_user}! 🎉")
+        #st.subheader(f"Willkommen auf der Startseite {jira_user}! 🎉")
 
     # Abmelde Button 
     if st.button("Abmelden", key="startpage-logout-button"):
         st.switch_page("./app.py")
 
     st.write("Deine Projekte")
+
     #Container zum Anzeigen der Tickets
-    with st.container(border=True, height=300, key="startpage-ticket-container"):
+    with st.container(border=True, height=200, key="startpage-ticket-container"):
+
         #Überprüfen ob Tickts vorhanden sind und Anzeigen dieser
         if not st.session_state.jira_projects: 
             st.write(f"Keine Vorhandenen Projekte für diesen User: {jira_user}")
         else:
             for project in st.session_state.jira_projects:
+               #Alle vorhandenen Projekte als Button abbilden
                if st.button(f"Projekt: {project.key} - {project.name}", key=f"project{project.key}"):
                    st.session_state.jira_client.jira_project = project
                    st.switch_page("pages/myprojects.py")
 
+    #Container zum Anzeigen der Statistiken
     with st.container(key="statistics-container"):
+
         #Statistik Ticket-Bearbeitungszeit durschnittlich für die letzten 12 Monate (User)
         with st.container(key="startpage-graph1-container"):
+            show_user_avg_processing_time_chart()
             
-            date_range_df = calc_monthly_date_ranges(12) 
-            tickets = st.session_state.jira_client.load_tickets_between_dates_user(date_range_df.iloc[-1]["start_date"], 
-                                                                                        date_range_df.iloc[0]["end_date"],)
-            avg_monthly_proc_time_df = calc_average_processing_time(tickets, date_range_df)
-
-            if not avg_monthly_proc_time_df.empty:
-                bar_chart = px.bar(avg_monthly_proc_time_df, 
-                                    x="Monat", 
-                                    y="dursch. Bearbeitungszeit", 
-                                    title="Durchschnittliche Bearbeitungszeit pro Monat in Tagen")
-                    
-                bar_chart.update_xaxes(tickformat="%b %Y")
-                bar_chart.update_layout(xaxis_type='category')
-                st.plotly_chart(bar_chart)
-                
-
-
-        #Statistik Spalte 2
+        ##Statistik Ticket-Bearbeitungszeit durschnittlich für die letzten 12 Monate (User)
         with st.container(key="startpage-graph2-container"): 
-            
-            #Tickets von der API Laden
-            tickets = st.session_state.jira_client.load_all_tickets_user()
-
-            #Funktion um die Prozentwerte auszurechnen
-            status_percantage = calc_ticket_status_percantage(tickets)
-
-            #Daten Objekt für das Kreisdiagramm erstellen
-            piechart_data = {
-                "Kategorien" : ["Geschlossen", "Neu", "In Bearbeitung"],
-                "Werte" : [status_percantage["Fertig"], status_percantage["Offen"], status_percantage["In Bearbeitung"]]
-            }
-
-            #Piechart Konfigurieren
-            piechart = px.pie(piechart_data, names="Kategorien", values="Werte") 
-            st.plotly_chart(piechart)
+            show_user_ticket_status_chart()
 
            
+
+# Beispiel-Daten: Eine Liste von Dictionaries, jedes entspricht einem Ticket
+ticket_data = [
+    {'Ticket-ID': 'T-001', 'Status': 'Erledigt', 'Erstellt am': '2024-11-01', 'Erledigt am': '2024-11-05', 'Typ': 'Bug'},
+    {'Ticket-ID': 'T-002', 'Status': 'Offen', 'Erstellt am': '2024-11-03', 'Erledigt am': None, 'Typ': 'Feature'},
+    {'Ticket-ID': 'T-003', 'Status': 'Erledigt', 'Erstellt am': '2024-11-10', 'Erledigt am': '2024-11-15', 'Typ': 'Task'},
+    {'Ticket-ID': 'T-004', 'Status': 'In Bearbeitung', 'Erstellt am': '2024-11-12', 'Erledigt am': None, 'Typ': 'Bug'},
+]
+
+# In ein Pandas DataFrame umwandeln
+df = pd.DataFrame(ticket_data)
+
+# Datumsangaben in echte Datumsobjekte umwandeln
+df['Erstellt am'] = pd.to_datetime(df['Erstellt am'])
+df['Erledigt am'] = pd.to_datetime(df['Erledigt am'])
+
+# Beispiel-Ausgabe: DataFrame anzeigen
+dfs
