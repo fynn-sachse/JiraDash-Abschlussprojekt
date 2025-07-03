@@ -71,39 +71,6 @@ def calc_monthly_date_ranges(months_back):
     
     return pd.DataFrame(monthly_date_ranges)
 
-"""
-def calc_avg_age(tickets, date_ranges_df):
-
-    date_ranges_df["durchsch. Alter"] = 0
-
-    for index, row in date_ranges_df.iterrows():
-
-        total_time = timedelta()
-        processed_issues = 0
-
-        for issue in tickets:
-
-            age_seconds = calc_ticket_age(issue)
-            
-            created_date = pd.to_datetime(issue.fields.created)
-            
-
-            if row["start_date"] <= created_date.date() <= row["end_date"] and age_seconds is not None:
-                total_time += timedelta(seconds=age_seconds)
-                processed_issues += 1
-
-        if processed_issues > 0: 
-            avg_time = (total_time.total_seconds() / processed_issues / 86400)     
-            date_ranges_df.at[index, "durchsch. Alter"] = avg_time
-        else:
-            date_ranges_df.at[index, "durchsch. Alter"] = None
-    
-    
-    date_ranges_df["Monat"] = pd.to_datetime(date_ranges_df["Monat"]).dt.strftime('%b %Y')
-    return(date_ranges_df)
-"""
-# new 
-
 def calc_avg_age(tickets, date_ranges_df):
     
     preprocessed = [
