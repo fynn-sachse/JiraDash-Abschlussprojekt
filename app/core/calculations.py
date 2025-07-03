@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import streamlit as st
 import pytz
 import pandas as pd
 
@@ -42,9 +41,6 @@ def calc_ticket_proc_time(issue):
         first_change_date = pd.to_datetime(first_change)
         resolved_date = pd.to_datetime(resolved)
         processing_time_seconds = (resolved_date - first_change_date).total_seconds()
-        #print(resolved_date)
-        #print(first_change_date)
-        #print(processing_time_seconds)
         return processing_time_seconds  
     
    
@@ -95,8 +91,35 @@ def calc_avg_age(tickets, date_ranges_df):
             
     date_ranges_df["Monat"] = pd.to_datetime(date_ranges_df["Monat"]).dt.strftime('%b %Y')
     return date_ranges_df
-                
 
+
+def calc_average_processing_time(tickets, date_ranges_df):
+
+    preprocessed = [
+        {
+            "created": pd.to_datetime(issue.fields.created).date(),
+            "proc_time_days": calc_ticket_proc_time(issue) / 86400,
+        }
+
+        for issue in tickets
+        if calc_ticket_proc_time(issue) is not None and issue.fields.resolutiondate is not None 
+    ]   
+
+    for index, row in date_ranges_df.iterrows():
+        filtered = [issue for issue in preprocessed 
+                    if row["start_date"] <= issue["created"] <= row["end_date"]]
+        
+        if filtered:
+            avg_proc_time = sum(issue["proc_time_days"] for issue in filtered) / len(filtered)
+            date_ranges_df.at[index, "durchsch. Bearbeitungszeit"] = avg_proc_time
+        else:
+            date_ranges_df.at[index, "durchsch. Bearbeitungszeit"] = None
+            
+    date_ranges_df["Monat"] = pd.to_datetime(date_ranges_df["Monat"]).dt.strftime('%b %Y')
+    return date_ranges_df
+
+
+"""
 def calc_average_processing_time(tickets, date_ranges_df):
 
     date_ranges_df["durchsch. Bearbeitungszeit"] = 0
@@ -130,7 +153,7 @@ def calc_average_processing_time(tickets, date_ranges_df):
     
 
     return(date_ranges_df)
-        
+"""   
        
 
     
