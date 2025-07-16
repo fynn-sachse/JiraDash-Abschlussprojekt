@@ -12,8 +12,7 @@ load_dotenv()
 
 class JiraClient:
 
-    
-   
+
     def __init__(self, jira_user, jira_password, jira_project):
         self.server_url = os.getenv("JIRA_SERVER_URL")
         self.jira_auth = self.auth_jira_server(jira_user, jira_password)

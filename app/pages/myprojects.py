@@ -265,7 +265,7 @@ def handle_avg_ticket_age_chart():
         # Statstic-Flag auf True setzten
         st.session_state.show_statistic = True
         #Seite neu Laden
-        #st.rerun()
+        st.rerun()
 
  
 # Dialog-Funktion für Statistikeinstellungen

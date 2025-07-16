@@ -95,7 +95,7 @@ with st.container(key="main-container"):
     #Container für Header
     with st.container(key="startpage-header-container"):
         st.title("Startseite")
-        #st.subheader(f"Willkommen auf der Startseite {jira_user}! 🎉")
+        st.subheader(f"Willkommen auf der Startseite {jira_user}! 🎉")
 
     # Abmelde Button 
     if st.button("Abmelden", key="startpage-logout-button"):
@@ -129,20 +129,3 @@ with st.container(key="main-container"):
 
            
 
-# Beispiel-Daten: Eine Liste von Dictionaries, jedes entspricht einem Ticket
-ticket_data = [
-    {'Ticket-ID': 'T-001', 'Status': 'Erledigt', 'Erstellt am': '2024-11-01', 'Erledigt am': '2024-11-05', 'Typ': 'Bug'},
-    {'Ticket-ID': 'T-002', 'Status': 'Offen', 'Erstellt am': '2024-11-03', 'Erledigt am': None, 'Typ': 'Feature'},
-    {'Ticket-ID': 'T-003', 'Status': 'Erledigt', 'Erstellt am': '2024-11-10', 'Erledigt am': '2024-11-15', 'Typ': 'Task'},
-    {'Ticket-ID': 'T-004', 'Status': 'In Bearbeitung', 'Erstellt am': '2024-11-12', 'Erledigt am': None, 'Typ': 'Bug'},
-]
-
-# In ein Pandas DataFrame umwandeln
-df = pd.DataFrame(ticket_data)
-
-# Datumsangaben in echte Datumsobjekte umwandeln
-df['Erstellt am'] = pd.to_datetime(df['Erstellt am'])
-df['Erledigt am'] = pd.to_datetime(df['Erledigt am'])
-
-# Beispiel-Ausgabe: DataFrame anzeigen
-dfs

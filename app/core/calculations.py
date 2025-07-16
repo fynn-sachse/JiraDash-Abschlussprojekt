@@ -118,45 +118,7 @@ def calc_average_processing_time(tickets, date_ranges_df):
     date_ranges_df["Monat"] = pd.to_datetime(date_ranges_df["Monat"]).dt.strftime('%b %Y')
     return date_ranges_df
 
-
-"""
-def calc_average_processing_time(tickets, date_ranges_df):
-
-    date_ranges_df["durchsch. Bearbeitungszeit"] = 0
-
-    for index, row in date_ranges_df.iterrows():
-
-        total_time = timedelta()
-        processed_issues = 0
-
-        for issue in tickets:
-            processing_time_seconds = calc_ticket_proc_time(issue)
-            
-
-            # Abschlussdatum aus Jira Ticket holen
-            if issue.fields.resolutiondate: 
-                completion_date = pd.to_datetime(issue.fields.resolutiondate, utc=True)
-
-                 # Nur Tickets zählen, die in dem Monat abgeschlossen wurden
-                if row["start_date"] <= completion_date.date() <= row["end_date"] and processing_time_seconds is not None:
-                    total_time += timedelta(seconds=processing_time_seconds)
-                    processed_issues += 1
-        
-        if processed_issues > 0: 
-            avg_time = (total_time.total_seconds() / processed_issues / 86400) # Umrechnung Sekunden zu Tagen      
-            date_ranges_df.at[index, "durchsch. Bearbeitungszeit"] = avg_time
-        else:
-            date_ranges_df.at[index, "durchsch. Bearbeitungszeit"] = None
-    
-    date_ranges_df["Monat"] = pd.to_datetime(date_ranges_df["Monat"]).dt.strftime('%b %Y')
-
-    
-
-    return(date_ranges_df)
-"""   
-       
-
-    
+ 
 # Prozent Satz der Tickets eines User nach Status Berechnen 
 def calc_ticket_status_percantage(tickets):
     status_count = {"done": 0, "to do": 0, "in progress": 0}
