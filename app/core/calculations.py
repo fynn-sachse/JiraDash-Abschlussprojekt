@@ -3,9 +3,7 @@ from dateutil.relativedelta import relativedelta
 import pytz
 import pandas as pd
 
-# ---DOTOS---
-# Tickets direkt nach Erstellt oder erledigt von der API Abfragen -> Perfomanter (Erstellt VS Erledigt u. processing_time)
-# Bei Alter und Bearbeitungszeit nicht immer über jeden Monat iterrieren und Sekunden aussrechnen -> Sekunden vorher ausrechnen
+
 
 # ---Info--- 
 # 1. Durschnittliche Bearbeitungszeiten werden zu dem Monat zugeordnet in dem die Tickets geschlossen worden sind
