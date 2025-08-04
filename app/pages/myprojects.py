@@ -5,18 +5,6 @@ import plotly.express as px #Installiert
 
 from core.calculations import calc_ticket_status_percantage_dynamic, calc_tickets_done_vs_created, calc_average_processing_time,calc_monthly_date_ranges, calc_daily_date_ranges, calc_avg_age
 
-# DONE
-# 1. Beim kreisdiagramm müssen die tickets noch nach Stadie von der API abgefragt werden -> nicht möglich keine 
-#    dynamische Abfrage
-# 2. Bessere Variante zum Abfragen der Stadie finden für die Selectbox -> Bisher noch keine Gefunden
-# 3. Im Kreisdiagramm-Dialog Lädt die seite für jeden neu ausgählte Stadie neu 
-# 5. Statistik Daten in einer sessionstate variable Speichern
-
-
-# 7  bei mehreren Tickettypen evtl nur mehrere als auswahl zulassen
-# 8. Bearbeitungszeiten nach mehreren Typen berücksichtigt neues Fehler Ticket nicht -> Ticket wird gar nicht erst geladen
-
-
 st.set_page_config(initial_sidebar_state="expanded")
 
 add_pagelink = (
