@@ -5,10 +5,6 @@ from datetime import datetime
 import plotly.express as px #Installiert
 from core.calculations import calc_average_processing_time, calc_ticket_status_percantage, calc_monthly_date_ranges
 
-# DOTO:
-# übersichtlich machen wie viele Tickets schon geladen haben
-# Beim Kreisdiagramm Tickets auch über einen Zeitraum abfgragen
-# Charts in eigene Componente auslagern
 
 st.set_page_config(initial_sidebar_state="expanded")
 
