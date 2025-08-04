@@ -7,11 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-#DOTO
-# 1. Methodenname kürzen
 
 class JiraClient:
-
 
     def __init__(self, jira_user, jira_password, jira_project):
         self.server_url = os.getenv("JIRA_SERVER_URL")
